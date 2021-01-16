@@ -19,6 +19,16 @@ pub fn get_cli(version: &str) {
                         .takes_value(true)
                         .value_name("DIR")
                 )
+
+                .arg(
+                    Arg::with_name("output")
+                        .short("o")
+                        .long("output")
+                        .help("Output directory to save results")
+                        .takes_value(true)
+                        .default_value(".")
+                        .value_name("OUTPUT-DIR")
+                )
             )
         .get_matches();
     
@@ -28,7 +38,9 @@ pub fn get_cli(version: &str) {
         ("find", Some(dir_matches)) => {
             if dir_matches.is_present("dir") {
                 let path = dir_matches.value_of("dir").unwrap();
-                input::process_input(&path);
+                let outdir = dir_matches.value_of("output").unwrap();
+
+                input::process_input(&path, &outdir);
             } else {
                 println!("NO COMMANDS PROVIDED!");
             }
