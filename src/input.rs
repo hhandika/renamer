@@ -8,7 +8,7 @@ use crate::output;
 pub fn process_input(path: &str, outdir: &str) {
     let mut entries = traverse_dir(&path);
 
-    output::write_to_csv(&mut entries, outdir);
+    output::write_to_csv(&mut entries, outdir).unwrap();
 }
 
 fn traverse_dir(path: &str) -> Vec<PathBuf> {
