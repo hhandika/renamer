@@ -31,8 +31,6 @@ pub fn get_cli(version: &str) {
                 )
             )
         .get_matches();
-    
-    println!("Looking for files...");
 
     match args.subcommand() {
         ("find", Some(dir_matches)) => {
