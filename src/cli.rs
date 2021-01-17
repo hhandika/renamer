@@ -60,7 +60,7 @@ pub fn get_cli(version: &str) {
             if rename_matches.is_present("input") {
                 let input = rename_matches.value_of("input").unwrap();
 
-                renamer::parse_csv(&input).unwrap();
+                renamer::rename_files(&input).unwrap();
             }
         }
         _ => unreachable!("UNREACHABLE COMMANDS!"),
