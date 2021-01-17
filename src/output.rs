@@ -7,18 +7,19 @@ pub fn write_to_csv(recs: &mut [PathBuf], outdir: &str) -> Result<()> {
     let csv = File::create(&fname).unwrap();
     let mut line = LineWriter::new(csv);
 
-    writeln!(line, "full_path,filenames,id,read_id").unwrap();
+    writeln!(line, "full_path,parent,filenames,id,read_id").unwrap();
 
     recs.sort_by(|a, b| a.cmp(&b));
 
     recs.iter()
         .for_each(|r| {
             let full_path = r.to_string_lossy().into_owned();
+            let parent = r.parent().unwrap().to_string_lossy().into_owned();
             let file = r.file_name().unwrap().to_string_lossy().into_owned();
             let id = Id::split_file_names(&file);
-            writeln!(line, "{},{},{},{}", full_path, file, id.file_id, id.read_id).unwrap();
+            writeln!(line, "{},{},{},{},{}", full_path,parent, file, id.file_id, id.read_id).unwrap();
         });
-        
+
     println!("Done! The result is saved as {}", &fname);
     Ok(())
 }
