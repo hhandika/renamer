@@ -4,6 +4,7 @@
 mod cli;
 mod input;
 mod output;
+mod renamer;
 
 fn main() {
     let version = "0.1.0";

@@ -1,6 +1,7 @@
 use clap::{App, AppSettings, Arg};
 
 use crate::input;
+use crate::renamer;
 
 pub fn get_cli(version: &str) {
     let args = App::new("renamer")
@@ -29,18 +30,37 @@ pub fn get_cli(version: &str) {
                         .default_value(".")
                         .value_name("OUTPUT-DIR")
                 )
-            )
+        )
+        .subcommand(
+            App::new("rename")
+            .about("Find relevant fastq files")
+                .arg(
+                    Arg::with_name("input")
+                        .short("i")
+                        .long("input")
+                        .help("Input file.")
+                        .takes_value(true)
+                        .value_name("INPUT_FILE")
+                )
+        )
         .get_matches();
 
     match args.subcommand() {
-        ("find", Some(dir_matches)) => {
-            if dir_matches.is_present("dir") {
-                let path = dir_matches.value_of("dir").unwrap();
-                let outdir = dir_matches.value_of("output").unwrap();
+        ("find", Some(find_matches)) => {
+            if find_matches.is_present("dir") {
+                let path = find_matches.value_of("dir").unwrap();
+                let outdir = find_matches.value_of("output").unwrap();
 
                 input::process_input(&path, &outdir);
             } else {
                 println!("NO COMMANDS PROVIDED!");
+            }
+        }
+        ("rename", Some(rename_matches)) => {
+            if rename_matches.is_present("input") {
+                let input = rename_matches.value_of("input").unwrap();
+
+                renamer::parse_csv(&input).unwrap();
             }
         }
         _ => unreachable!("UNREACHABLE COMMANDS!"),
