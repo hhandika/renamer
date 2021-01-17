@@ -16,13 +16,8 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
             match i {
                 0 => (),
                 _ => { 
-                    
-                    let files: Vec<String> = recs.split(',')
-                        .map(|recs| recs.trim().to_string())
-                        .collect();
-                        
+                    let files = split_csv_lines(&recs);
                     filenames.insert(files[0].to_string(), files[1].to_string());
-
                 }
             }
             
@@ -36,9 +31,36 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
     Ok(())
 }
 
-// fn split_csv_lines(lines: &String) -> Vec<String> {
-//     let lines: Vec<String> = 
-//     ) 
-    
-//     lines
-// }
+fn split_csv_lines(lines: &String) -> Vec<String> {
+    let files: Vec<String> = lines.split(',')
+        .map(|recs| recs.trim().to_string())
+        .collect();
+
+    if files.len() != 2 {
+        panic!("INVALID CSV INPUT! ONLY TWO COLUMNS ALLOWED.")
+    }
+
+    files
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn split_csv_lines_test() {
+        let lines = String::from("./test/old_names.fastq.gz,./test/new_names.fastq.gz");
+        let res = vec!["./test/old_names.fastq.gz","./test/new_names.fastq.gz"];
+
+        assert_eq!(res, split_csv_lines(&lines));
+    }
+
+    #[test]
+    #[should_panic]
+    fn split_csv_panic_test() {
+        let lines = String::from("./test/old_names.fastq.gz,\
+            ./test/new_names.fastq.gz,\
+            ./test/other_names.fastq.gz");
+        split_csv_lines(&lines);
+    }
+}
