@@ -2,8 +2,8 @@
 // 16 January 2021
 
 mod cli;
-mod input;
-mod output;
+mod finder;
+mod writer;
 mod renamer;
 
 use std::time::Instant;

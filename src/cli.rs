@@ -1,6 +1,6 @@
 use clap::{App, AppSettings, Arg};
 
-use crate::input;
+use crate::finder;
 use crate::renamer;
 
 pub fn get_cli(version: &str) {
@@ -51,7 +51,7 @@ pub fn get_cli(version: &str) {
                 let path = find_matches.value_of("dir").unwrap();
                 let outdir = find_matches.value_of("output").unwrap();
 
-                input::process_input(&path, &outdir);
+                finder::process_input(&path, &outdir);
             } else {
                 println!("NO COMMANDS PROVIDED!");
             }
