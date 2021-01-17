@@ -14,3 +14,4 @@ Cargo.lock
 
 /target
 /data
+fastq_records.csv
