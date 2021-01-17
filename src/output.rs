@@ -64,6 +64,7 @@ mod test {
     use super::*;
 
     #[test]
+    // Test for non-OMG database filename format.
     fn path_id_test() {
         let lines = PathBuf::from("data/HDWND_AAGT_A1_L1_R2_01.fastq.gz");
         let mut id = Id::new(&lines);
@@ -74,6 +75,7 @@ mod test {
     }
 
     #[test]
+    // Test for OMG database filenames. 
     fn path_modify_id_test() {
         let lines = PathBuf::from("data/26535_HDWND_AAGT_A1_L1_R2_01.fastq.gz");
         let mut id = Id::new(&lines);
