@@ -18,6 +18,7 @@ pub fn write_to_csv(recs: &mut [PathBuf], outdir: &str) -> Result<()> {
             let id = Id::split_file_names(&file);
             writeln!(line, "{},{},{},{}", full_path, file, id.file_id, id.read_id).unwrap();
         });
+        
     println!("Done! The result is saved as {}", &fname);
     Ok(())
 }
