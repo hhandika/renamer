@@ -7,7 +7,7 @@ pub fn get_cli(version: &str) {
     let args = App::new("renamer")
         .version(version)
         .about("Find raq fastq and rename them")
-        .author("Heru Handika <hhandi1@lsu.edu")
+        .author("Heru Handika <hhandi1@lsu.edu>")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(
             App::new("find")
