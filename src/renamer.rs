@@ -27,7 +27,8 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
             Err(error) => match error.kind() {
 
                 ErrorKind::PermissionDenied => { 
-                    println!("Can't rename the file. File may be in use by another program.");
+                    println!("Can't rename {:?}. It may be used by another program.", old_names);
+                    
                     let input =  get_user_input();
                     match input {
                         b'r' => fs::rename(old_names, new_names).unwrap(),
@@ -36,8 +37,9 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
                             roll_back_renaming(&temp);
                             process::abort();
                         }
-                        _ => ()
+                        _ => panic!("UNKNOWN ERRORS COMING FROM USER INPUTS!")
                     }
+                    
                 }
 
                 ErrorKind::NotFound => {
@@ -95,15 +97,24 @@ fn split_csv_lines(lines: &String) -> Vec<String> {
 }
 
 fn get_user_input() -> u8 {
-    println!("What would you like to do: [r]retry, [c]continue, [a]bort? ");
+    println!("What would you like to do: [r]etry, [c]ontinue, [a]bort? ");
 
-    let input = io::stdin()
-        .bytes()
-        .next()
-        .and_then(|ok| ok.ok())
-        .map(|byte| byte as u8);
-    
-    input.unwrap()
+    let mut input;
+    loop {
+        input = io::stdin()
+            .bytes()
+            .next()
+            .and_then(|ok| ok.ok())
+            .map(|key| key as u8)
+            .unwrap();
+        
+        match input {
+            b'c' | b'r' | b'a' => break,
+            _ => ()
+        };
+    }
+
+    input
 }
 
 fn roll_back_renaming(filenames: &HashMap<PathBuf, PathBuf>) {
