@@ -15,7 +15,7 @@ fn main() {
     cli::get_cli(&version);
     let elapsed = tnow.elapsed(); 
     
-    println!("Execution time: {:?}", elapsed);
+    println!("\nExecution time: {:?}", elapsed);
     println!("Thank you for using renamer v{} 🙏", &version);
     
 }
