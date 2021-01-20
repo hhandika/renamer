@@ -97,7 +97,7 @@ fn split_csv_lines(lines: &String) -> Vec<String> {
 }
 
 fn get_user_input() -> u8 {
-    println!("What would you like to do: [r]etry, [c]ontinue, [a]bort? ");
+    println!("What would you like to do: [r]etry/[c]ontinue/[a]bort? ");
 
     let mut input;
     loop {
@@ -110,7 +110,7 @@ fn get_user_input() -> u8 {
         
         match input {
             b'c' | b'r' | b'a' => break,
-            _ => ()
+            _ => println!("Incorrect input! Please, try again...")
         };
     }
 
