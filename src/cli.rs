@@ -6,12 +6,12 @@ use crate::renamer;
 pub fn get_cli(version: &str) {
     let args = App::new("renamer")
         .version(version)
-        .about("Automate file renaming across directories")
+        .about("Automates file renaming across directories")
         .author("Heru Handika <hhandi1@lsu.edu>")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(
             App::new("find")
-                .about("Find relevant fastq files")
+                .about("Finds relevant fastq files")
                 .arg(
                     Arg::with_name("dir")
                         .short("d")
@@ -33,7 +33,7 @@ pub fn get_cli(version: &str) {
         )
         .subcommand(
             App::new("rename")
-            .about("Rename files given csv input.")
+            .about("Renames files given csv input.")
                 .arg(
                     Arg::with_name("input")
                         .short("i")
@@ -53,6 +53,7 @@ pub fn get_cli(version: &str) {
         .get_matches();
 
     match args.subcommand() {
+
         ("find", Some(find_matches)) => {
             if find_matches.is_present("dir") {
                 let path = find_matches.value_of("dir").unwrap();
@@ -75,6 +76,7 @@ pub fn get_cli(version: &str) {
                 }
             }
         }
+        
         _ => unreachable!("UNREACHABLE COMMANDS!"),
     };
 }
