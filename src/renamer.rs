@@ -30,6 +30,17 @@ fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
     filenames
 }
 
+pub fn dry_run(path: &str) -> Result<(), Error> {
+    let filenames = parse_csv(path);
+
+    filenames.iter()
+        .for_each(|(old, new)| {
+            display_result(old, new);
+        });
+    
+    Ok(())
+}
+
 pub fn rename_files(path: &str) -> Result<(), Error> {
     let filenames = parse_csv(path);
 
@@ -41,6 +52,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
             Err(error) => match error.kind() {
 
                 ErrorKind::PermissionDenied => { 
+                    println!("Can't rename the file. File may be in use by another program.");
                     let input =  get_user_input();
                     match input {
                         b'r' => fs::rename(old_names, new_names).unwrap(),
@@ -64,10 +76,14 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
             }
         }
         temp.insert(new_names.to_path_buf(), old_names.to_path_buf());
-        println!("{:?} \x1b[0;36m => \x1b[0m {:?}", old_names, new_names);
+        display_result(old_names, new_names);
     }
 
     Ok(())
+}
+
+fn display_result(current: &PathBuf, new: &PathBuf) {
+    println!("{:?} \x1b[0;36m => \x1b[0m {:?}", current, new);
 }
 
 fn roll_back_renaming(filenames: &HashMap<PathBuf, PathBuf>) {
@@ -75,7 +91,7 @@ fn roll_back_renaming(filenames: &HashMap<PathBuf, PathBuf>) {
     filenames.iter()
         .for_each(|(new, old)| {
             fs::rename(new, old).unwrap();
-            println!("{:?} \x1b[0;36m => \x1b[0m {:?}", new, old);
+            display_result(new, old);
         });
 }
 

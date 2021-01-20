@@ -42,6 +42,13 @@ pub fn get_cli(version: &str) {
                         .takes_value(true)
                         .value_name("INPUT_FILE")
                 )
+
+                .arg(
+                    Arg::with_name("dry-run")
+                        .long("dry")
+                        .help("Dry run. Print the expected results.")
+                        .takes_value(false)
+                )
         )
         .get_matches();
 
@@ -60,7 +67,11 @@ pub fn get_cli(version: &str) {
             if rename_matches.is_present("input") {
                 let input = rename_matches.value_of("input").unwrap();
 
-                renamer::rename_files(&input).unwrap();
+                if rename_matches.is_present("dry-run") {
+                    renamer::dry_run(&input).unwrap();
+                } else {
+                    renamer::rename_files(&input).unwrap();
+                }
             }
         }
         _ => unreachable!("UNREACHABLE COMMANDS!"),
