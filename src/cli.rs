@@ -6,7 +6,7 @@ use crate::renamer;
 pub fn get_cli(version: &str) {
     let args = App::new("renamer")
         .version(version)
-        .about("Find raq fastq and rename them")
+        .about("Automate file renaming across directories")
         .author("Heru Handika <hhandi1@lsu.edu>")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(
