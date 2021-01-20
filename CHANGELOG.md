@@ -7,7 +7,7 @@
 ## Current:
 - v0.2.2
     - In the cases of permission errors, the program will make sure the
-        user insert the correct input.
+        user enter the correct input.
 
 - v0.2.1
     - Fix errors in help messages.
