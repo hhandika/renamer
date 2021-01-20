@@ -33,7 +33,7 @@ pub fn get_cli(version: &str) {
         )
         .subcommand(
             App::new("rename")
-            .about("Find relevant fastq files")
+            .about("Rename files given csv input.")
                 .arg(
                     Arg::with_name("input")
                         .short("i")
