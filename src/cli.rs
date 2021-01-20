@@ -63,6 +63,7 @@ pub fn get_cli(version: &str) {
                 println!("NO COMMANDS PROVIDED!");
             }
         }
+        
         ("rename", Some(rename_matches)) => {
             if rename_matches.is_present("input") {
                 let input = rename_matches.value_of("input").unwrap();

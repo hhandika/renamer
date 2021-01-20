@@ -40,11 +40,8 @@ mod test {
     #[test]
     fn traverse_dir_test() {
         let path = "test_files/";
-        let test1 = PathBuf::from("test_files/valid.fastq.gz");
-        let test2 = PathBuf::from("test_files/valid2.fastq.gz");
+        let res = traverse_dir(&path);
 
-        let res = vec![test1, test2];
-
-        assert_eq!(res, traverse_dir(&path));
+        assert_eq!(3, res.len());
     }
 }

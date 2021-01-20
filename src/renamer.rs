@@ -5,31 +5,6 @@ use std::io::prelude::*;
 use std::path::PathBuf;
 use std::process;
 
-fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
-    let file = File::open(path).unwrap();
-    let buff = BufReader::new(&file);
-
-    let mut filenames: HashMap<PathBuf, PathBuf> = HashMap::new();
-
-    buff.lines()
-        .filter_map(|ok| ok.ok())
-        .enumerate()
-        .for_each(|(i, recs)| {
-            match i {
-                0 => (),
-                _ => { 
-                    let files = split_csv_lines(&recs);
-                    let old_names = PathBuf::from(files[0].to_string());
-                    let new_names = PathBuf::from(files[1].to_string());
-                    filenames.insert(old_names, new_names);
-                }
-            }
-            
-        });
-
-    filenames
-}
-
 pub fn dry_run(path: &str) -> Result<(), Error> {
     let filenames = parse_csv(path);
 
@@ -82,29 +57,29 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
     Ok(())
 }
 
-fn display_result(current: &PathBuf, new: &PathBuf) {
-    println!("{:?} \x1b[0;36m => \x1b[0m {:?}", current, new);
-}
+fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
+    let file = File::open(path).unwrap();
+    let buff = BufReader::new(&file);
 
-fn roll_back_renaming(filenames: &HashMap<PathBuf, PathBuf>) {
-    println!("Rolling back!");
-    filenames.iter()
-        .for_each(|(new, old)| {
-            fs::rename(new, old).unwrap();
-            display_result(new, old);
+    let mut filenames: HashMap<PathBuf, PathBuf> = HashMap::new();
+
+    buff.lines()
+        .filter_map(|ok| ok.ok())
+        .enumerate()
+        .for_each(|(i, recs)| {
+            match i {
+                0 => (),
+                _ => { 
+                    let files = split_csv_lines(&recs);
+                    let old_names = PathBuf::from(files[0].to_string());
+                    let new_names = PathBuf::from(files[1].to_string());
+                    filenames.insert(old_names, new_names);
+                }
+            }
+            
         });
-}
 
-fn get_user_input() -> u8 {
-    println!("What would you like to do: [r]retry, [c]continue, [a]bort? ");
-
-    let input = io::stdin()
-        .bytes()
-        .next()
-        .and_then(|ok| ok.ok())
-        .map(|byte| byte as u8);
-    
-    input.unwrap()
+    filenames
 }
 
 fn split_csv_lines(lines: &String) -> Vec<String> {
@@ -119,6 +94,36 @@ fn split_csv_lines(lines: &String) -> Vec<String> {
     files
 }
 
+fn get_user_input() -> u8 {
+    println!("What would you like to do: [r]retry, [c]continue, [a]bort? ");
+
+    let input = io::stdin()
+        .bytes()
+        .next()
+        .and_then(|ok| ok.ok())
+        .map(|byte| byte as u8);
+    
+    input.unwrap()
+}
+
+fn roll_back_renaming(filenames: &HashMap<PathBuf, PathBuf>) {
+    println!("Rolling back!");
+    filenames.iter()
+        .for_each(|(new, old)| {
+            fs::rename(new, old).unwrap();
+            display_result(new, old);
+        });
+}
+
+// I call it current and new for the function arguments
+// Because this function is used for rolling back as well.
+fn display_result(current: &PathBuf, new: &PathBuf) {
+    let stdout = io::stdout();
+    let mut buff = io::BufWriter::new(stdout);
+
+    writeln!(buff, "{:?} \x1b[0;36m => \x1b[0m {:?}", current, new).unwrap();
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -126,9 +131,9 @@ mod test {
     #[test]
     fn split_csv_lines_test() {
         let lines = String::from("./test/old_names.fastq.gz,./test/new_names.fastq.gz");
-        let res = vec!["./test/old_names.fastq.gz","./test/new_names.fastq.gz"];
+        let res = split_csv_lines(&lines);
 
-        assert_eq!(res, split_csv_lines(&lines));
+        assert_eq!(2, res.len());
     }
 
     #[test]
@@ -138,5 +143,27 @@ mod test {
             ./test/new_names.fastq.gz,\
             ./test/other_names.fastq.gz");
         split_csv_lines(&lines);
+    }
+
+    #[test]
+    fn dry_run_test() {
+        let input = "test_files/input.csv";
+        let res = dry_run(input);
+
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn parse_csv_test() {
+        let input = "test_files/input.csv";
+        let old = PathBuf::from("data/valid.fastq.gz");
+        let new = PathBuf::from("data/valid_new.fastq.gz");
+
+        let filenames = parse_csv(&input);
+
+        for (old_names, new_names) in filenames {
+            assert_eq!(old, old_names);
+            assert_eq!(new, new_names);
+        }
     }
 }
