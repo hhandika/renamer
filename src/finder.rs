@@ -1,7 +1,7 @@
 
 use std::path::PathBuf;
 
-use walkdir::{DirEntry, WalkDir};
+use walkdir::WalkDir;
 
 use crate::writer;
 
@@ -12,13 +12,10 @@ pub fn process_input(path: &str, outdir: &str) {
 }
 
 fn traverse_dir(path: &str) -> Vec<PathBuf> {
-    let files: Vec<DirEntry> = WalkDir::new(path).into_iter()
-        .filter_map(|recs| recs.ok())
-        .collect();
-    
     let mut entries: Vec<PathBuf> = Vec::new();
 
-    files.into_iter()
+    WalkDir::new(path).into_iter()
+        .filter_map(|recs| recs.ok())
         .for_each(|e| {
             let files = String::from(e.path().to_string_lossy());
             match &files {
@@ -29,9 +26,32 @@ fn traverse_dir(path: &str) -> Vec<PathBuf> {
                 _ => (),
             };
         });
+        
     
     entries
 }
+
+// fn traverse_dir(path: &str) -> Vec<PathBuf> {
+//     let files: Vec<DirEntry> = WalkDir::new(path).into_iter()
+//         .filter_map(|recs| recs.ok())
+//         .collect();
+    
+//     let mut entries: Vec<PathBuf> = Vec::new();
+
+//     files.into_iter()
+//         .for_each(|e| {
+//             let files = String::from(e.path().to_string_lossy());
+//             match &files {
+//                 s if s.ends_with(".fastq.gz") => entries.push(PathBuf::from(files)),
+//                 s if s.ends_with(".fq.gz") => entries.push(PathBuf::from(files)),
+//                 s if s.ends_with("fastq.gzip") => entries.push(PathBuf::from(files)),
+//                 s if s.ends_with("fq.gzip") => entries.push(PathBuf::from(files)),
+//                 _ => (),
+//             };
+//         });
+    
+//     entries
+// }
 
 #[cfg(test)]
 mod test {
