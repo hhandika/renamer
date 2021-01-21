@@ -9,7 +9,7 @@ mod renamer;
 use std::time::Instant;
 
 fn main() {
-    let version = "0.2.2";
+    let version = "0.2.3";
 
     let tnow = Instant::now();
     cli::get_cli(&version);
