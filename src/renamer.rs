@@ -25,7 +25,11 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
         let new_names = construct_path_new_names(old_names, prop_names);
 
         match fs::rename(old_names, &new_names) {
-            Ok(file) => file,
+            Ok(()) => {
+                temp.insert(new_names.to_path_buf(), old_names.to_path_buf());
+                display_result(old_names, &new_names);
+            },
+
             Err(error) => match error.kind() {
 
                 ErrorKind::PermissionDenied => { 
@@ -33,15 +37,31 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
                     
                     let input =  get_user_input();
                     match input {
-                        b'r' => fs::rename(old_names, &new_names).unwrap(),
-                        b'c' => continue,
+
+                        b'r' => { 
+                            match fs::rename(old_names, &new_names) {
+                                Ok(()) => {
+                                    temp.insert(new_names.to_path_buf(), old_names.to_path_buf());
+                                    display_result(old_names, &new_names);
+                                }
+                                Err(_) => {
+                                    println!("Still can't rename {:?}. Skipping it...", old_names);
+                                    continue;
+                                }
+                            }
+                        }
+
+                        b'c' => {
+                            println!("Skipping {:?}", old_names);
+                            continue;
+                        },
+
                         b'a' => {
                             roll_back_renaming(&temp);
                             process::abort();
                         }
                         _ => panic!("UNKNOWN ERRORS COMING FROM USER INPUTS!")
-                    }
-                    
+                    }   
                 }
 
                 ErrorKind::NotFound => {
@@ -54,8 +74,6 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
                 }
             }
         }
-        temp.insert(new_names.to_path_buf(), old_names.to_path_buf());
-        display_result(old_names, &new_names);
     }
 
     Ok(())
@@ -123,7 +141,7 @@ fn construct_path_new_names(
         old_names: &PathBuf, 
         prop_names: &PathBuf
     ) -> PathBuf {
-        
+
     let parent_path = old_names.parent().unwrap();
     let new_names = prop_names.file_name().unwrap();
 
