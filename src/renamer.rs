@@ -19,6 +19,8 @@ pub fn dry_run(path: &str) -> Result<(), Error> {
 pub fn rename_files(path: &str) -> Result<(), Error> {
     let filenames = parse_csv(path);
 
+    // Keep track file renaming.
+    // Opposite insertion. The new_names is the key.
     let mut temp: HashMap<PathBuf, PathBuf> = HashMap::new();
 
     for (old_names, prop_names) in filenames.iter() {
