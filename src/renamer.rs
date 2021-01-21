@@ -21,8 +21,10 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
 
     let mut temp: HashMap<PathBuf, PathBuf> = HashMap::new();
 
-    for (old_names, new_names) in filenames.iter() {
-        match fs::rename(old_names, new_names) {
+    for (old_names, prop_names) in filenames.iter() {
+        let new_names = old_names.parent().unwrap().join(prop_names);
+
+        match fs::rename(old_names, &new_names) {
             Ok(file) => file,
             Err(error) => match error.kind() {
 
@@ -31,7 +33,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
                     
                     let input =  get_user_input();
                     match input {
-                        b'r' => fs::rename(old_names, new_names).unwrap(),
+                        b'r' => fs::rename(old_names, &new_names).unwrap(),
                         b'c' => continue,
                         b'a' => {
                             roll_back_renaming(&temp);
@@ -53,7 +55,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
             }
         }
         temp.insert(new_names.to_path_buf(), old_names.to_path_buf());
-        display_result(old_names, new_names);
+        display_result(old_names, &new_names);
     }
 
     Ok(())
