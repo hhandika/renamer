@@ -22,7 +22,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
     let mut temp: HashMap<PathBuf, PathBuf> = HashMap::new();
 
     for (old_names, prop_names) in filenames.iter() {
-        let new_names = old_names.parent().unwrap().join(prop_names);
+        let new_names = construct_path_new_names(old_names, prop_names);
 
         match fs::rename(old_names, &new_names) {
             Ok(file) => file,
@@ -119,6 +119,17 @@ fn get_user_input() -> u8 {
     input
 }
 
+fn construct_path_new_names(
+        old_names: &PathBuf, 
+        prop_names: &PathBuf
+    ) -> PathBuf {
+        
+    let parent_path = old_names.parent().unwrap();
+    let new_names = prop_names.file_name().unwrap();
+
+    parent_path.join(new_names)
+}
+
 fn roll_back_renaming(filenames: &HashMap<PathBuf, PathBuf>) {
     println!("Rolling back!");
     filenames.iter()
@@ -178,5 +189,17 @@ mod test {
             assert_eq!(old, old_names);
             assert_eq!(new, new_names);
         }
+    }
+
+    #[test]
+    fn construct_path_test() {
+        let old_name = PathBuf::from("data/old.fq.gz");
+        let prop_name = PathBuf::from("new.fq.gz");
+        let prop_path = PathBuf::from("data/new.fq.gz");
+
+        let new_names = PathBuf::from("data/new.fq.gz");
+
+        assert_eq!(new_names, construct_path_new_names(&old_name, &prop_name));
+        assert_eq!(new_names, construct_path_new_names(&old_name, &prop_path));
     }
 }
