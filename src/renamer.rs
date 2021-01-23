@@ -111,11 +111,17 @@ fn split_csv_lines(lines: &String) -> Vec<String> {
         .map(|recs| recs.trim().to_string())
         .collect();
 
-    if files.len() != 2 {
-        panic!("INVALID CSV INPUT! ONLY TWO COLUMNS ALLOWED.")
-    }
+    let cols = files.len();
 
-    files
+    if cols < 2 || files[1].is_empty() {
+        panic!("INVALID CSV INPUT! ONLY ONE COLUMN FOUND.");
+    } else if cols > 2 {
+        println!("CSV INPUT HAS MORE THAN TWO COLUMNS.\
+            ASSUMING THE FIRST TWO ARE THE FILENAMES.");
+        files[..=1].to_vec() // return only 1st and 2nd columns
+    } else {  
+        files
+    }
 }
 
 fn get_user_input() -> u8 {
@@ -181,12 +187,26 @@ mod test {
     }
 
     #[test]
-    #[should_panic]
-    fn split_csv_panic_test() {
+    fn multicols_csv_split_test() {
         let lines = String::from("./test/old_names.fastq.gz,\
             ./test/new_names.fastq.gz,\
-            ./test/other_names.fastq.gz");
-        split_csv_lines(&lines);
+            ./test/new_names.fastq.gz");
+        let res = split_csv_lines(&lines);
+        assert_eq!(2, res.len());
+    }
+
+    #[test]
+    #[should_panic]
+    fn split_csv_empty_col_panic_test() {
+        let empty_cols = String::from("./test/old_names.fastq.gz,");
+        split_csv_lines(&empty_cols);
+    }
+
+    #[test]
+    #[should_panic]
+    fn split_csv_one_cols_panic_test() {
+        let one_col = String::from("./test/old_names.fastq.gz");
+        split_csv_lines(&one_col);
     }
 
     #[test]
