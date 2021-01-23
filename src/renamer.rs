@@ -192,7 +192,18 @@ mod test {
             ./test/new_names.fastq.gz,\
             ./test/new_names.fastq.gz");
         let res = split_csv_lines(&lines);
+        
         assert_eq!(2, res.len());
+    }
+
+    #[test]
+    fn multicols_csv_split_res_test() {
+        let lines = String::from("./test/old_names.fastq.gz,\
+            ./test/new_names.fastq.gz,\
+            ./test/new_names.fastq.gz");
+        let res = split_csv_lines(&lines);
+        let names = vec!["./test/old_names.fastq.gz","./test/new_names.fastq.gz"];
+        assert_eq!(names, res);
     }
 
     #[test]
