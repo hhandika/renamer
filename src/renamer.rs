@@ -108,7 +108,7 @@ fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
     filenames
 }
 
-fn split_csv_lines(lines: &String, lcounts: &mut u32) -> Vec<String> {
+fn split_csv_lines(lines: &str, lcounts: &mut u32) -> Vec<String> {
     let files: Vec<String> = lines.split(',')
         .map(|recs| recs.trim().to_string())
         .collect();
