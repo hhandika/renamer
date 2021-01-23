@@ -87,19 +87,20 @@ fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
     let buff = BufReader::new(&file);
 
     let mut filenames: HashMap<PathBuf, PathBuf> = HashMap::new();
-    let mut lcounts = 2; // Line count start from 2. L1 is the header.
+    let mut lcounts = 1; // Indexing line.
     println!("Checking csv input...");
     buff.lines()
         .filter_map(|ok| ok.ok())
         .enumerate()
         .for_each(|(i, recs)| {
             match i {
-                0 => (), // Ignoring the header
+                0 => lcounts+=1, // Ignoring the header
                 _ => { 
-                    let files = split_csv_lines(&recs, &mut lcounts);
+                    let files = split_csv_lines(&recs, &lcounts);
                     let old_names = PathBuf::from(files[0].to_string());
                     let new_names = PathBuf::from(files[1].to_string());
                     filenames.insert(old_names, new_names);
+                    lcounts += 1;
                 }
             }
             
@@ -108,7 +109,7 @@ fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
     filenames
 }
 
-fn split_csv_lines(lines: &str, lcounts: &mut u32) -> Vec<String> {
+fn split_csv_lines(lines: &str, lcounts: &u32) -> Vec<String> {
     let files: Vec<String> = lines.split(',')
         .map(|recs| recs.trim().to_string())
         .collect();
@@ -120,10 +121,13 @@ fn split_csv_lines(lines: &str, lcounts: &mut u32) -> Vec<String> {
     } else if cols > 2 {
         println!("LINE {} HAS MORE THAN TWO COLUMNS.\
             ASSUMING THE FIRST TWO ARE THE FILENAMES.", lcounts);
-        *lcounts += 1;
-        files[..=1].to_vec() // return only 1st and 2nd columns
+        // Return only the first two. 
+        // The caller should only process the first two, 
+        // despite returning more cols.
+        // With this we can unit test to make sure it returns only the first two.
+        files[..=1].to_vec() 
     } else {
-        files
+        files   
     }
 }
 
@@ -184,8 +188,8 @@ mod test {
     #[test]
     fn split_csv_lines_test() {
         let lines = String::from("./test/old_names.fastq.gz,./test/new_names.fastq.gz");
-        let mut lcounts = 0;
-        let res = split_csv_lines(&lines, &mut lcounts);
+        let lcounts = 1;
+        let res = split_csv_lines(&lines, &lcounts);
 
         assert_eq!(2, res.len());
     }
@@ -195,8 +199,8 @@ mod test {
         let lines = String::from("./test/old_names.fastq.gz,\
             ./test/new_names.fastq.gz,\
             ./test/new_names.fastq.gz");
-        let mut lcounts = 1;
-        let res = split_csv_lines(&lines, &mut lcounts);
+        let lcounts = 1;
+        let res = split_csv_lines(&lines, &lcounts);
         
         assert_eq!(2, res.len());
     }
@@ -206,8 +210,8 @@ mod test {
         let lines = String::from("./test/old_names.fastq.gz,\
             ./test/new_names.fastq.gz,\
             ./test/new_names.fastq.gz");
-        let mut lcounts = 1;
-        let res = split_csv_lines(&lines, &mut lcounts);
+        let lcounts = 1;
+        let res = split_csv_lines(&lines, &lcounts);
         let names = vec!["./test/old_names.fastq.gz","./test/new_names.fastq.gz"];
         assert_eq!(names, res);
     }
@@ -216,16 +220,16 @@ mod test {
     #[should_panic]
     fn split_csv_empty_col_panic_test() {
         let empty_cols = String::from("./test/old_names.fastq.gz,");
-        let mut lcols = 1;
-        split_csv_lines(&empty_cols, &mut lcols);
+        let lcols = 1;
+        split_csv_lines(&empty_cols, &lcols);
     }
 
     #[test]
     #[should_panic]
     fn split_csv_one_cols_panic_test() {
         let one_col = String::from("./test/old_names.fastq.gz");
-        let mut lcols = 1;
-        split_csv_lines(&one_col, &mut lcols);
+        let lcols = 1;
+        split_csv_lines(&one_col, &lcols);
     }
 
     #[test]
