@@ -116,10 +116,10 @@ fn split_csv_lines(lines: &String, lcounts: &mut u32) -> Vec<String> {
     let cols = files.len();
 
     if cols < 2 || files[1].is_empty() {
-        panic!("INVALID CSV INPUT! ONLY ONE COLUMN FOUND.");
+        panic!("INVALID CSV INPUT! ONLY ONE COLUMN FOUND IN LINE {}.", lcounts);
     } else if cols > 2 {
         println!("LINE {} HAS MORE THAN TWO COLUMNS.\
-            ASSUMING THE FIRST TWO ARE THE FILENAMES.", &lcounts);
+            ASSUMING THE FIRST TWO ARE THE FILENAMES.", lcounts);
         *lcounts += 1;
         files[..=1].to_vec() // return only 1st and 2nd columns
     } else {
