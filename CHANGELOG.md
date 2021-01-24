@@ -5,6 +5,13 @@
 - Add features to specify file extensions.
 
 ## Current:
+- v0.3.4
+    - Improved dry run features.    
+        - Check if the original files exist.
+        - Check if files exist for for the proposed names.
+        - Colorized terminal outputs.
+    - Add multi-directory wildcard support.
+
 - v0.2.4
     - Allow multicolumns csv, although the app only process the first two columns.
     - Warn users if the csv is more than two column.
