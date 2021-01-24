@@ -18,16 +18,26 @@ pub fn get_cli(version: &str) {
                     Arg::with_name("dir")
                         .short("d")
                         .long("dir")
-                        .help("Input directory to traverse.")
+                        .help("Inputs directory to traverse.")
                         .takes_value(true)
                         .value_name("DIR")
+                )
+
+                .arg(
+                    Arg::with_name("wildcard")
+                        .short("c")
+                        .long("wildcard")
+                        .help("Finds using wildcards.")
+                        .conflicts_with_all(&[ "dir", "specify"])
+                        .multiple(true)
+                        .value_name("WILDCARD")
                 )
 
                 .arg(
                     Arg::with_name("specify")
                         .short("s")
                         .long("specify")
-                        .help("Specify file extension.")
+                        .help("Specifies file extension.")
                         .takes_value(true)
                         .default_value("fastq")
                         .value_name("EXTENSION")
@@ -48,7 +58,7 @@ pub fn get_cli(version: &str) {
                 .arg(
                     Arg::with_name("dry-run")
                         .long("dry")
-                        .help("Dry run. Print the expected results.")
+                        .help("Dry run. Checks input first.")
                         .takes_value(false)
                 )
         )
@@ -61,9 +71,16 @@ pub fn get_cli(version: &str) {
                 let path = find_matches.value_of("dir").unwrap();
                 let ext = find_matches.value_of("specify").unwrap();
 
-                finder::process_input(path, ext);
+                finder::process_input_dir(path, ext);
 
 
+            } else if find_matches.is_present("wildcard") {
+                let entries: Vec<&str> = find_matches.values_of("wildcard")
+                                                    .unwrap()
+                                                    .collect();
+                finder::process_input_wcard(&entries);
+                
+                
             } else {
                 println!("NO COMMANDS PROVIDED!");
             }

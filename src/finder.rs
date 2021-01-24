@@ -4,10 +4,20 @@ use walkdir::WalkDir;
 
 use crate::writer;
 
-pub fn process_input(path: &str, ext: &str) {
+pub fn process_input_dir(path: &str, ext: &str) {
     let mut entries = traverse_dir(path, ext);
     println!("Found {} files", entries.len());
     writer::write_to_csv(&mut entries).unwrap();
+}
+
+pub fn process_input_wcard(files: &[&str]) {
+    let mut entries = convert_wcard_to_path(files);
+    println!("Found {} files", entries.len());
+    writer::write_to_csv(&mut entries).unwrap();
+}
+
+fn convert_wcard_to_path(files: &[&str]) -> Vec<PathBuf> {
+    files.iter().map(PathBuf::from).collect()
 }
 
 fn traverse_dir(path: &str, ext: &str) -> Vec<PathBuf> {
@@ -63,5 +73,38 @@ mod test {
         let res = traverse_dir(&path, &ext);
 
         assert_eq!(3, res.len());
+    }
+
+    #[test]
+    fn match_fastq_test() {
+        let path_1 = "Bunomys_andrewsi.fastq.gz";
+        let path_2 = "Bunomys_chrysocomus.fastq.gz";
+        let path_3 = "Bunomys_chrysocomus.fasta";
+        let files = vec![path_1, path_2, path_3];
+
+        let mut entries = Vec::new();
+        files.iter()
+            .for_each(|e|
+                match_fastq(e, &mut entries)
+            );
+        assert_eq!(2, entries.len());
+    }
+
+    #[test]
+    fn match_any_test() {
+        let path_1 = "Bunomys_andrewsi.csv";
+        let path_2 = "Bunomys_chrysocomus.csv";
+        let path_3 = "Bunomys_chrysocomus.csv";
+        let path_4 = "Bunomys_chrysocomus.fasta";
+        let ext = "csv";
+
+        let files = vec![path_1, path_2, path_3, path_4];
+        
+        let mut entries = Vec::new();
+        files.iter()
+            .for_each(|e|
+                match_any(e, &ext, &mut entries)
+            );
+        assert_eq!(3, entries.len());
     }
 }
