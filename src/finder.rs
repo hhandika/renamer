@@ -6,7 +6,7 @@ use crate::writer;
 
 pub fn process_input(path: &str) {
     let mut entries = traverse_dir(&path);
-
+    println!("Found {} files", entries.len());
     writer::write_to_csv(&mut entries).unwrap();
 }
 

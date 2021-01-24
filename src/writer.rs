@@ -25,7 +25,7 @@ pub fn write_to_csv(recs: &mut [PathBuf]) -> Result<()> {
             ).unwrap();
         });
 
-    println!("Done! The result is saved as {}", &fname);
+    println!("The result is saved as {}", &fname);
     Ok(())
 }
 
