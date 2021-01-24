@@ -185,9 +185,10 @@ fn create_duplicate_names(fpath: &PathBuf) -> PathBuf {
             let new_stem = stem.replace(".fasta", "_renamerdup.fasta");
             new_names = format!("{}.{}", &new_stem, &ext);
         }
+        
         _ => (),
     }
-    
+
     let fnames = PathBuf::from(&new_names);
     let path = fpath.parent().unwrap();
 
