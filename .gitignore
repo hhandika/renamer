@@ -15,3 +15,4 @@ Cargo.lock
 /target
 /data
 fastq_records.csv
+renamer-finder.csv
