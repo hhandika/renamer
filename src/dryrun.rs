@@ -27,15 +27,15 @@ fn display_result_dry(old: &PathBuf, new: &PathBuf) -> bool {
     let mut errors = false;
 
     if old.is_file() && !new.is_file() {
-        write!(buff, "[ OK ]\t").unwrap();
+        write!(buff, "[ OK ]\t\t").unwrap();
     } else if !old.is_file() && !new.is_file() {
-        write!(buff, "\x1b[0;41m[Error1]\x1b[0m\t").unwrap();
+        write!(buff, "\x1b[0;41m[Error 1]\x1b[0m\t").unwrap();
         errors = true;
     } else if !old.is_file() && new.is_file() {
-        write!(buff, "\x1b[0;41m[Error2]\x1b[0m\t").unwrap();
+        write!(buff, "\x1b[0;41m[Error 2]\x1b[0m\t").unwrap();
         errors = true;
     } else if !old.is_file() && new.is_file() {
-        write!(buff, "\x1b[0;41m[Error3]\x1b[0m\t").unwrap();
+        write!(buff, "\x1b[0;41m[Error 3]\x1b[0m\t").unwrap();
         errors = true;
     } else {
         panic!("Unknown errors when displaying the dry run results.");
