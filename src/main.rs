@@ -3,8 +3,10 @@
 
 mod cli;
 mod finder;
-mod writer;
+mod parser;
 mod renamer;
+mod writer;
+
 
 use std::time::Instant;
 
