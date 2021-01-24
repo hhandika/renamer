@@ -7,7 +7,6 @@ use crate::parser;
 pub fn dry_run(path: &str) -> Result<(), Error> {
     let filenames = parser::parse_csv(path);
 
-
     filenames.iter()
         .for_each(|(old, new)| {
             display_result_dry(old, new);
