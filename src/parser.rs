@@ -27,7 +27,7 @@ pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
             }
             
         });
-    println!("\nFound {} files", lcounts - 2); // exclude header.
+    println!("\nFound {} entries", lcounts - 2); // exclude header.
 
     filenames
 }
