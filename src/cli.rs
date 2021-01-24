@@ -24,13 +24,13 @@ pub fn get_cli(version: &str) {
                 )
 
                 .arg(
-                    Arg::with_name("output")
-                        .short("o")
-                        .long("output")
-                        .help("Output directory to save results")
+                    Arg::with_name("specify")
+                        .short("s")
+                        .long("specify")
+                        .help("Specify file extension.")
                         .takes_value(true)
-                        .default_value(".")
-                        .value_name("OUTPUT-DIR")
+                        .default_value("fastq")
+                        .value_name("EXTENSION")
                 )
         )
         .subcommand(
@@ -59,9 +59,11 @@ pub fn get_cli(version: &str) {
         ("find", Some(find_matches)) => {
             if find_matches.is_present("dir") {
                 let path = find_matches.value_of("dir").unwrap();
-                let outdir = find_matches.value_of("output").unwrap();
+                let ext = find_matches.value_of("specify").unwrap();
 
-                finder::process_input(&path, &outdir);
+                finder::process_input(path, ext);
+
+
             } else {
                 println!("NO COMMANDS PROVIDED!");
             }
@@ -72,9 +74,9 @@ pub fn get_cli(version: &str) {
                 let input = rename_matches.value_of("input").unwrap();
 
                 if rename_matches.is_present("dry-run") {
-                    dryrun::dry_run(&input).unwrap();
+                    dryrun::dry_run(input).unwrap();
                 } else {
-                    renamer::rename_files(&input).unwrap();
+                    renamer::rename_files(input).unwrap();
                 }
             }
         }
