@@ -118,17 +118,14 @@ fn split_csv_lines(lines: &str, lcounts: &u32) -> Vec<String> {
 
     if cols < 2 || files[1].is_empty() {
         panic!("INVALID CSV INPUT! ONLY ONE COLUMN FOUND IN LINE {}.", lcounts);
-    } else if cols > 2 {
+    } 
+    
+    if cols > 2 {
         println!("LINE {} HAS MORE THAN TWO COLUMNS.\
             ASSUMING THE FIRST TWO ARE THE FILENAMES.", lcounts);
-        // Return only the first two. 
-        // The caller should only process the first two, 
-        // despite returning more cols.
-        // With this we can unit test to make sure it returns only the first two.
-        files[..=1].to_vec() 
-    } else {
-        files   
     }
+    
+    files   
 }
 
 fn get_user_input() -> u8 {
@@ -158,9 +155,43 @@ fn construct_path_new_names(
     ) -> PathBuf {
 
     let parent_path = old_names.parent().unwrap();
-    let new_names = prop_names.file_name().unwrap();
+    let filenames = prop_names.file_name().unwrap();
+    let mut new_names = parent_path.join(filenames);
 
-    parent_path.join(new_names)
+    if new_names.is_file() {
+        new_names = create_duplicate_names(&new_names);
+    }
+
+    new_names
+}
+
+fn create_duplicate_names(fpath: &PathBuf) -> PathBuf {
+    let stem = fpath.file_stem().unwrap().to_string_lossy();
+    let ext = fpath.extension().unwrap().to_string_lossy();
+    let mut new_names = format!("{}_renamerdup.{}", &stem, &ext);
+
+    match &stem {
+        s if s.ends_with(".fastq") => {
+            let new_stem = stem.replace(".fastq", "_renamerdup.fastq");
+            new_names = format!("{}.{}", &new_stem, &ext);
+        }
+
+        s if s.ends_with(".fq") => {
+            let new_stem = stem.replace(".fq", "_renamerdup.fq");
+            new_names = format!("{}.{}", &new_stem, &ext);
+        }
+
+        s if s.ends_with(".fasta") => {
+            let new_stem = stem.replace(".fasta", "_renamerdup.fasta");
+            new_names = format!("{}.{}", &new_stem, &ext);
+        }
+        _ => (),
+    }
+    
+    let fnames = PathBuf::from(&new_names);
+    let path = fpath.parent().unwrap();
+
+    path.join(&fnames)
 }
 
 fn roll_back_renaming(filenames: &HashMap<PathBuf, PathBuf>) {
@@ -186,6 +217,13 @@ mod test {
     use super::*;
 
     #[test]
+    #[should_panic]
+    fn rename_file_panic_test() {
+        let input = "test_files/invalid_input.csv";
+        rename_files(&input).unwrap();
+    }
+
+    #[test]
     fn split_csv_lines_test() {
         let lines = String::from("./test/old_names.fastq.gz,./test/new_names.fastq.gz");
         let lcounts = 1;
@@ -202,18 +240,7 @@ mod test {
         let lcounts = 1;
         let res = split_csv_lines(&lines, &lcounts);
         
-        assert_eq!(2, res.len());
-    }
-
-    #[test]
-    fn multicols_csv_split_res_test() {
-        let lines = String::from("./test/old_names.fastq.gz,\
-            ./test/new_names.fastq.gz,\
-            ./test/new_names.fastq.gz");
-        let lcounts = 1;
-        let res = split_csv_lines(&lines, &lcounts);
-        let names = vec!["./test/old_names.fastq.gz","./test/new_names.fastq.gz"];
-        assert_eq!(names, res);
+        assert_eq!(3, res.len());
     }
 
     #[test]
@@ -255,6 +282,34 @@ mod test {
     }
 
     #[test]
+    fn parse_multicols_csv_test() {
+        let input = "test_files/multicols_input.csv";
+        let old = PathBuf::from("data/valid2.fastq.gz");
+        let new = PathBuf::from("valid_new2.fastq.gz");
+
+        let filenames = parse_csv(&input);
+
+        for (old_names, new_names) in filenames {
+            assert_eq!(old, old_names);
+            assert_eq!(new, new_names);
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_csv_panic_test() {
+        let input = "test_files/invalid_input.csv";
+        parse_csv(&input);
+    }
+
+    #[test]
+    #[should_panic(expected="INVALID CSV INPUT! ONLY ONE COLUMN FOUND IN LINE 3.")]
+    fn parse_csv_panic_message_test() {
+        let input = "test_files/invalid_input.csv";
+        parse_csv(&input);
+    }
+
+    #[test]
     fn construct_path_test() {
         let old_name = PathBuf::from("data/old.fq.gz");
         let prop_name = PathBuf::from("new.fq.gz");
@@ -265,4 +320,12 @@ mod test {
         assert_eq!(new_names, construct_path_new_names(&old_name, &prop_name));
         assert_eq!(new_names, construct_path_new_names(&old_name, &prop_path));
     }
+
+    #[test]
+    fn create_duplicat_name_test() {
+        let fname = PathBuf::from("data/some_input.fastq.gz");
+        let res = PathBuf::from("data/some_input_renamerdup.fastq.gz");
+        assert_eq!(res, create_duplicate_names(&fname));
+    }
+
 }
