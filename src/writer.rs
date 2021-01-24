@@ -2,8 +2,8 @@ use std::path::PathBuf;
 use std::fs::File;
 use std::io::{LineWriter, Write, Result};
 
-pub fn write_to_csv(recs: &mut [PathBuf], outdir: &str) -> Result<()> {
-    let fname = format!("{}/fastq_records.csv", outdir);
+pub fn write_to_csv(recs: &mut [PathBuf]) -> Result<()> {
+    let fname = format!("fastq_records.csv");
     let csv = File::create(&fname).unwrap();
     let mut line = LineWriter::new(csv);
 

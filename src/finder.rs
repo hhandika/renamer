@@ -4,10 +4,10 @@ use walkdir::WalkDir;
 
 use crate::writer;
 
-pub fn process_input(path: &str, outdir: &str) {
+pub fn process_input(path: &str) {
     let mut entries = traverse_dir(&path);
 
-    writer::write_to_csv(&mut entries, outdir).unwrap();
+    writer::write_to_csv(&mut entries).unwrap();
 }
 
 fn traverse_dir(path: &str) -> Vec<PathBuf> {
