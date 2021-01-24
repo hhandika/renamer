@@ -1,8 +1,6 @@
 ## Upcoming:
-- Make dry run check if the file exists
-- Make dry run check if there files exist with the proposed names
-- Add features to allow users using wildcard
-- Add features to specify file extensions.
+- Open finder result using a default spreadsheet application.
+- Simplify finder outputs.
 
 ## Current:
 - v0.3.4
