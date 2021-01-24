@@ -14,7 +14,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
     // Opposite insertion. The new_names is the key.
     let mut temp: HashMap<PathBuf, PathBuf> = HashMap::new();
 
-    println!("\nRenaming files...");
+    println!("Renaming files...");
     for (old_names, prop_names) in filenames.iter() {
         let new_names = construct_path_new_names(old_names, prop_names);
 
