@@ -2,6 +2,7 @@
 // 16 January 2021
 
 mod cli;
+mod dryrun;
 mod finder;
 mod parser;
 mod renamer;

@@ -7,17 +7,6 @@ use std::process;
 
 use crate::parser;
 
-pub fn dry_run(path: &str) -> Result<(), Error> {
-    let filenames = parser::parse_csv(path);
-
-    filenames.iter()
-        .for_each(|(old, new)| {
-            display_result(old, new);
-        });
-    
-    Ok(())
-}
-
 pub fn rename_files(path: &str) -> Result<(), Error> {
     let filenames = parser::parse_csv(path);
 
@@ -179,15 +168,6 @@ mod test {
         let input = "test_files/invalid_input.csv";
         rename_files(&input).unwrap();
     }
-
-    #[test]
-    fn dry_run_test() {
-        let input = "test_files/input.csv";
-        let res = dry_run(input);
-
-        assert!(res.is_ok());
-    }
-
     #[test]
     fn construct_path_test() {
         let old_name = PathBuf::from("data/old.fq.gz");
