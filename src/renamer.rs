@@ -185,7 +185,7 @@ fn create_duplicate_names(fpath: &PathBuf) -> PathBuf {
             let new_stem = stem.replace(".fasta", "_renamerdup.fasta");
             new_names = format!("{}.{}", &new_stem, &ext);
         }
-        
+
         _ => (),
     }
 
@@ -325,8 +325,12 @@ mod test {
     #[test]
     fn create_duplicat_name_test() {
         let fname = PathBuf::from("data/some_input.fastq.gz");
+        let fname_fq = PathBuf::from("data/some_input.fq.gz");
+
         let res = PathBuf::from("data/some_input_renamerdup.fastq.gz");
+        let res_fq = PathBuf::from("data/some_input_renamerdup.fq.gz");
         assert_eq!(res, create_duplicate_names(&fname));
+        assert_eq!(res_fq, create_duplicate_names(&fname_fq));
     }
 
 }
