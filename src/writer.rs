@@ -18,21 +18,19 @@ pub fn write_to_csv(recs: &mut [PathBuf], bpa: bool) -> Result<()> {
     recs.iter()
         .for_each(|r| {
             let mut id = Id::new(&r);
-            if bpa {
-                id.split_file_names();
-                writeln!(line, "{},{},{},{},{}", 
-                    id.full_path, 
-                    id.new_names, 
-                    id.fname, 
-                    id.file_id, 
-                    id.read_id
-                ).unwrap();
-            } else {
-                writeln!(line, "{},{},{}", 
+            write!(line, "{},{},{}", 
                     id.full_path, 
                     id.new_names, 
                     id.fname 
                 ).unwrap();
+            if bpa {
+                id.split_file_names();
+                writeln!(line, "{},{}", 
+                    id.file_id, 
+                    id.read_id
+                ).unwrap();
+            } else {
+                writeln!(line).unwrap();
             }
         });
 
