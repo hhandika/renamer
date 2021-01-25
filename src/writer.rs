@@ -7,10 +7,11 @@ pub fn write_to_csv(recs: &mut [PathBuf], bpa: bool) -> Result<()> {
     let csv = File::create(&fname).unwrap();
     let mut line = LineWriter::new(csv);
 
+    write!(line, "full_path,new_names,filenames").unwrap();
     if bpa {
-        writeln!(line, "full_path,new_names,filenames,id,read_id").unwrap();
+        writeln!(line, ",id,read_id").unwrap();
     } else {
-        writeln!(line, "full_path,new_names,filenames").unwrap();
+        writeln!(line).unwrap();
     }
 
     recs.sort_by(|a, b| a.cmp(&b));
