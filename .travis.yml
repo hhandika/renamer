@@ -14,7 +14,10 @@ jobs:
   allow_failures:
     - rust: nightly
 
-addons:
+sudo: true
+
+before_install:
+  - sudo apt-get updateaddons:
   apt:
     packages:
       - libcurl4-openssl-dev
@@ -23,7 +26,6 @@ addons:
       - cmake
       - gcc
       - binutils-dev
-      - libiberty-dev
 
 after_success: |
   wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
