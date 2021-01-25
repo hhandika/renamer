@@ -1,8 +1,7 @@
-## Upcoming:
-- Open finder result using a default spreadsheet application.
-- Simplify finder outputs.
-
-## Current:
+- v0.3.6
+    - Improved error checking.
+    - Check input errors before renaming.
+    
 - v0.3.5
     - Simplify finder output format.
     - Add a cli flag for BPA sequence database.
