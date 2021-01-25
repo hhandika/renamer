@@ -25,7 +25,7 @@ pub fn write_to_csv(recs: &mut [PathBuf], bpa: bool) -> Result<()> {
                 ).unwrap();
             if bpa {
                 id.split_file_names();
-                writeln!(line, "{},{}", 
+                writeln!(line, ",{},{}", 
                     id.file_id, 
                     id.read_id
                 ).unwrap();
