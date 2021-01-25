@@ -12,5 +12,5 @@ jobs:
   allow_failures:
     - rust: nightly
 
-after success:
+after_success:
   - bash <(curl -s https://codecov.io/bash)
