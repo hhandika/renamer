@@ -2,27 +2,38 @@ use std::path::PathBuf;
 use std::fs::File;
 use std::io::{LineWriter, Write, Result};
 
-pub fn write_to_csv(recs: &mut [PathBuf]) -> Result<()> {
+pub fn write_to_csv(recs: &mut [PathBuf], bpa: bool) -> Result<()> {
     let fname = "renamer-finder.csv";
     let csv = File::create(&fname).unwrap();
     let mut line = LineWriter::new(csv);
 
-    writeln!(line, "full_path,parent,filenames,id,read_id").unwrap();
+    if bpa {
+        writeln!(line, "full_path,new_names,filenames,id,read_id").unwrap();
+    } else {
+        writeln!(line, "full_path,new_names,filenames").unwrap();
+    }
 
     recs.sort_by(|a, b| a.cmp(&b));
 
     recs.iter()
         .for_each(|r| {
             let mut id = Id::new(&r);
-            id.split_file_names();
-
-            writeln!(line, "{},{},{},{},{}", 
-                id.full_path, 
-                id.parent, 
-                id.fname, 
-                id.file_id, 
-                id.read_id
-            ).unwrap();
+            if bpa {
+                id.split_file_names();
+                writeln!(line, "{},{},{},{},{}", 
+                    id.full_path, 
+                    id.new_names, 
+                    id.fname, 
+                    id.file_id, 
+                    id.read_id
+                ).unwrap();
+            } else {
+                writeln!(line, "{},{},{}", 
+                    id.full_path, 
+                    id.new_names, 
+                    id.fname 
+                ).unwrap();
+            }
         });
 
     println!("The result is saved as {}", &fname);
@@ -31,7 +42,7 @@ pub fn write_to_csv(recs: &mut [PathBuf]) -> Result<()> {
 
 struct Id {
     full_path: String,
-    parent: String,
+    new_names: String,
     fname: String,
     file_id: String,
     read_id: String,
@@ -41,7 +52,7 @@ impl Id {
     fn new(lines: &PathBuf) -> Self {
         Self {
             full_path: lines.to_string_lossy().into_owned(),
-            parent: lines.parent().unwrap().to_string_lossy().into_owned(),
+            new_names: String::from("FILL HERE!"),
             fname: lines.file_name().unwrap().to_string_lossy().into_owned(),
             file_id: String::from("N/A"), 
             read_id: String::from("N/A")
@@ -82,7 +93,7 @@ mod test {
         id.split_file_names();
 
         assert_eq!("data/26535_HDWND_AAGT_A1_L1_R2_01.fastq.gz", id.full_path);
-        assert_eq!("data", id.parent);
+        assert_eq!("FILL HERE!", id.new_names);
         assert_eq!("26535_HDWND_AAGT_A1_L1_R2_01.fastq.gz", id.fname);
         assert_eq!("26535_HDWND_AAGT", id.file_id);
         assert_eq!("A1_L1_R2_01.fastq.gz", id.read_id);

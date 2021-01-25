@@ -4,16 +4,16 @@ use walkdir::WalkDir;
 
 use crate::writer;
 
-pub fn process_input_dir(path: &str, ext: &str) {
+pub fn process_input_dir(path: &str, ext: &str, bpa: bool) {
     let mut entries = traverse_dir(path, ext);
     println!("Found {} files", entries.len());
-    writer::write_to_csv(&mut entries).unwrap();
+    writer::write_to_csv(&mut entries, bpa).unwrap();
 }
 
-pub fn process_input_wcard(files: &[&str]) {
+pub fn process_input_wcard(files: &[&str], bpa: bool) {
     let mut entries = convert_wcard_to_path(files);
     println!("Found {} files", entries.len());
-    writer::write_to_csv(&mut entries).unwrap();
+    writer::write_to_csv(&mut entries, bpa).unwrap();
 }
 
 fn convert_wcard_to_path(files: &[&str]) -> Vec<PathBuf> {

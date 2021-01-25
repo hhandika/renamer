@@ -42,7 +42,15 @@ pub fn get_cli(version: &str) {
                         .default_value("fastq")
                         .value_name("EXTENSION")
                 )
+
+                .arg(
+                    Arg::with_name("bpa")
+                        .long("bpa")
+                        .help("BPA database file format.")
+                        .takes_value(false)
+                )
         )
+
         .subcommand(
             App::new("rename")
             .about("Renames files given csv input.")
@@ -71,15 +79,23 @@ pub fn get_cli(version: &str) {
                 let path = find_matches.value_of("dir").unwrap();
                 let ext = find_matches.value_of("specify").unwrap();
 
-                finder::process_input_dir(path, ext);
-
+                if find_matches.is_present("bpa") {
+                    finder::process_input_dir(path, ext, true)
+                } else {
+                    finder::process_input_dir(path, ext, false);
+                }      
 
             } else if find_matches.is_present("wildcard") {
-                let entries: Vec<&str> = find_matches.values_of("wildcard")
-                                                    .unwrap()
-                                                    .collect();
-                finder::process_input_wcard(&entries);
-                
+                let entries: Vec<&str> = find_matches
+                    .values_of("wildcard")
+                    .unwrap()
+                    .collect();
+
+                if find_matches.is_present("bpa") {
+                    finder::process_input_wcard(&entries, true);
+                } else {
+                    finder::process_input_wcard(&entries, false);
+                }
                 
             } else {
                 println!("NO COMMANDS PROVIDED!");
