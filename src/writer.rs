@@ -64,7 +64,7 @@ fn write_content<W: Write>(id: &mut Id, line:&mut W, bpa: bool) {
         id.new_names, 
         id.fname)
         .unwrap();
-        
+
     if bpa {
         id.split_file_names();
         write!(line, ",{},{}", 
@@ -73,8 +73,7 @@ fn write_content<W: Write>(id: &mut Id, line:&mut W, bpa: bool) {
         ).unwrap();
     } 
     
-    writeln!(line).unwrap();
-            
+    writeln!(line).unwrap();          
 }
 
 #[cfg(test)]
