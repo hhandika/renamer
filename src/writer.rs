@@ -7,32 +7,12 @@ pub fn write_to_csv(recs: &mut [PathBuf], bpa: bool) -> Result<()> {
     let csv = File::create(&fname).unwrap();
     let mut line = LineWriter::new(csv);
 
-    write!(line, "full_path,new_names,filenames").unwrap();
-    if bpa {
-        writeln!(line, ",id,read_id").unwrap();
-    } else {
-        writeln!(line).unwrap();
-    }
-
     recs.sort_by(|a, b| a.cmp(&b));
-
+    write_header(&mut line, bpa);
     recs.iter()
         .for_each(|r| {
             let mut id = Id::new(&r);
-            write!(line, "{},{},{}", 
-                    id.full_path, 
-                    id.new_names, 
-                    id.fname 
-                ).unwrap();
-            if bpa {
-                id.split_file_names();
-                writeln!(line, ",{},{}", 
-                    id.file_id, 
-                    id.read_id
-                ).unwrap();
-            } else {
-                writeln!(line).unwrap();
-            }
+            write_content(&mut id, &mut line, bpa);
         });
 
     println!("The result is saved as {}", &fname);
@@ -68,6 +48,34 @@ impl Id {
     }
 }
 
+fn write_header<W: Write>(line:&mut W, bpa: bool) {
+    write!(line, "full_path,new_names,filenames").unwrap();
+
+    if bpa {
+        write!(line, ",id,read_id").unwrap();
+    } 
+    
+    writeln!(line).unwrap();
+}
+
+fn write_content<W: Write>(id: &mut Id, line:&mut W, bpa: bool) {
+    write!(line, "{},{},{}", 
+        id.full_path, 
+        id.new_names, 
+        id.fname)
+        .unwrap();
+        
+    if bpa {
+        id.split_file_names();
+        write!(line, ",{},{}", 
+            id.file_id, 
+            id.read_id
+        ).unwrap();
+    } 
+    
+    writeln!(line).unwrap();
+            
+}
 
 #[cfg(test)]
 mod test {
