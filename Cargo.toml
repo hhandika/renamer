@@ -1,6 +1,6 @@
 [package]
 name = "renamer"
-version = "0.3.4" # Also change version in the main.
+version = "0.3.5" # Also change version in the main.
 authors = ["hhandika"]
 edition = "2018"
 

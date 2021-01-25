@@ -3,6 +3,11 @@
 - Simplify finder outputs.
 
 ## Current:
+- v0.3.5
+    - Simplify finder output format.
+    - Add a cli flag for BPA sequence database.
+    - Finder csv output include new names.
+
 - v0.3.4
     - Improved dry run features.    
         - Check if the original files exist.

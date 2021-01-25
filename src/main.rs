@@ -12,7 +12,7 @@ mod writer;
 use std::time::Instant;
 
 fn main() {
-    let version = "0.3.4";
+    let version = "0.3.5";
 
     let tnow = Instant::now();
     cli::get_cli(&version);
