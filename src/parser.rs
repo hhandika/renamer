@@ -1,10 +1,11 @@
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{self, BufReader};
 use std::io::prelude::*;
 use std::path::PathBuf;
 
 use crate::checker;
+use std::process;
 
 pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
     let file = File::open(path).unwrap();
@@ -32,6 +33,8 @@ pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
             
         });
 
+    if errors > 0 {check_input(&errors);}
+
     println!("\nFound {} entries", lcounts - 2); // exclude header.
 
     filenames
@@ -54,6 +57,40 @@ fn split_csv_lines(lines: &str, lcounts: &u32) -> Vec<String> {
     }
     
     files   
+}
+
+fn check_input(errors: &u32) {
+    checker::display_errors(errors);
+    if !get_user_input_err() {
+        process::abort();
+    }
+}
+
+fn get_user_input_err() -> bool {
+    println!("Would you like to continue: [y]es/[n]o? ");
+
+    let mut input = false;
+    loop {
+        let key = io::stdin()
+            .bytes()
+            .next()
+            .and_then(|ok| ok.ok())
+            .map(|k| k as u8)
+            .unwrap();
+        
+        match key {
+            b'y' => { 
+                input = true; 
+                break;
+            }
+
+            b'n' => break,
+
+            _ => println!("Incorrect input! Please, try again...")
+        };
+    }
+
+    input
 }
 
 #[cfg(test)]
