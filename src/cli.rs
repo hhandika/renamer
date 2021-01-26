@@ -1,7 +1,7 @@
 use clap::{App, AppSettings, Arg};
 
 use crate::finder;
-use crate::dryrun;
+use crate::parser;
 use crate::renamer;
 
 
@@ -107,7 +107,9 @@ pub fn get_cli(version: &str) {
                 let input = rename_matches.value_of("input").unwrap();
 
                 if rename_matches.is_present("dry-run") {
-                    dryrun::dry_run(input).unwrap();
+                    let dryrun = true;
+                    parser::parse_csv(input, dryrun);
+
                 } else {
                     renamer::rename_files(input).unwrap();
                 }

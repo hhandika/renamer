@@ -3,7 +3,6 @@
 
 mod cli;
 mod checker;
-mod dryrun;
 mod finder;
 mod parser;
 mod renamer;
