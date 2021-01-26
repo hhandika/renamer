@@ -1,7 +1,7 @@
 # renamer
 [![Build Status](https://www.travis-ci.com/hhandika/renamer.svg?token=iQp4qFGynfoVoVviqG6N&branch=main)](https://www.travis-ci.com/hhandika/renamer)
-![renamer](https://github.com/actions/renamer/workflows/.github/workflows/renamer.yml/badge.svg)
-[![codecov](https://codecov.io/gh/hhandika/renamer/branch/main/graph/badge.svg?token=GTRALIA5YZ)](https://codecov.io/gh/hhandika/renamer)
+![renamer](https://github.com/hhandika/renamer/workflows/renamer/badge.svg)
+<!-- [![codecov](https://codecov.io/gh/hhandika/renamer/branch/main/graph/badge.svg?token=GTRALIA5YZ)](https://codecov.io/gh/hhandika/renamer) -->
 
 Renamer is a simple command line application to rename files, whether it is within the same directory, multiple directories, or recursively across nested directories. It is designed to rename at least dozens of files safely. Particularly useful for critical files that you need to keep track which files that you rename. Whenever it is needed to revert the filenames to their original names, you can do it quickly using the app. I created the app to renaming hundreds of raw reads Fastq sequences. But, soon it will be able to rename any files. 
 
