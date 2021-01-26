@@ -51,8 +51,8 @@ fn split_csv_lines(lines: &str, lcounts: &u32) -> Vec<String> {
     } 
     
     if cols > 2 {
-        println!("LINE {} HAS MORE THAN TWO COLUMNS.\
-            ASSUMING THE FIRST TWO ARE THE FILENAMES.", lcounts);
+        println!("\x1b[0;33mLINE {} HAS MORE THAN TWO COLUMNS.\
+            ASSUMING THE FIRST TWO ARE THE FILENAMES.\x1b[0m", lcounts);
     }
     
     files   
