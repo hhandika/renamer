@@ -69,30 +69,19 @@ fn check_input(errors: &u32, dryrun: bool) {
 
 fn get_user_input_err() -> Result<(), Error> {
     println!("\nWould you like to continue: [y]es/[n]o? ");
-
-    let mut input = false;
     loop {
-        let key = io::stdin()
+        let input = io::stdin()
             .bytes()
             .next()
             .and_then(|ok| ok.ok())
             .map(|k| k as u8)
             .unwrap();
         
-        match key {
-            b'y' => { 
-                input = true; 
-                break;
-            }
-
-            b'n' => break,
-
+        match input {
+            b'y' => break,
+            b'n' => process::exit(1),
             _ => println!("Incorrect input! Please, try again...")
         };
-    }
-
-    if !input {
-        process::exit(1);
     }
 
     Ok(())
