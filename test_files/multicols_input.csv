@@ -1,2 +1,2 @@
 old_names,new_names,another_cols
-data/valid2.fastq.gz,valid_new2.fastq.gz,data/valid2.fastq.gz
+test_files/valid2.fastq.gzip,valid_new2.fastq.gz,data/valid2.fastq.gz

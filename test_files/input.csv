@@ -1,2 +1,2 @@
 old_names,new_names
-data/valid.fastq.gz,data/valid_new.fastq.gz
+test_files/valid.fastq.gz,test_files/valid_new.fastq.gz

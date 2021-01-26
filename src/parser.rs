@@ -4,6 +4,7 @@ use std::io::BufReader;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
+use crate::checker;
 
 pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
     let file = File::open(path).unwrap();
@@ -11,6 +12,7 @@ pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
 
     let mut filenames: HashMap<PathBuf, PathBuf> = HashMap::new();
     let mut lcounts = 1; // Indexing line.
+    let mut errors = 0;
     println!("Checking csv input...");
     buff.lines()
         .filter_map(|ok| ok.ok())
@@ -22,6 +24,7 @@ pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
                     let files = split_csv_lines(&recs, &lcounts);
                     let old_names = PathBuf::from(&files[0]);
                     let new_names = PathBuf::from(&files[1]);
+                    checker::check_input_errors(&old_names, &new_names, &mut errors);
                     filenames.insert(old_names, new_names);
                     lcounts += 1;
                 }
@@ -96,8 +99,8 @@ mod test {
     #[test]
     fn parse_csv_test() {
         let input = "test_files/input.csv";
-        let old = PathBuf::from("data/valid.fastq.gz");
-        let new = PathBuf::from("data/valid_new.fastq.gz");
+        let old = PathBuf::from("test_files/valid.fastq.gz");
+        let new = PathBuf::from("test_files/valid_new.fastq.gz");
 
         let filenames = parse_csv(&input);
 
@@ -110,7 +113,7 @@ mod test {
     #[test]
     fn parse_multicols_csv_test() {
         let input = "test_files/multicols_input.csv";
-        let old = PathBuf::from("data/valid2.fastq.gz");
+        let old = PathBuf::from("test_files/valid2.fastq.gzip");
         let new = PathBuf::from("valid_new2.fastq.gz");
 
         let filenames = parse_csv(&input);
