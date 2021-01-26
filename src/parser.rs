@@ -4,6 +4,7 @@ use std::io::BufReader;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
+
 pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
     let file = File::open(path).unwrap();
     let buff = BufReader::new(&file);
@@ -19,14 +20,15 @@ pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
                 0 => lcounts+=1, // Ignoring the header
                 _ => { 
                     let files = split_csv_lines(&recs, &lcounts);
-                    let old_names = PathBuf::from(files[0].to_string());
-                    let new_names = PathBuf::from(files[1].to_string());
+                    let old_names = PathBuf::from(&files[0]);
+                    let new_names = PathBuf::from(&files[1]);
                     filenames.insert(old_names, new_names);
                     lcounts += 1;
                 }
             }
             
         });
+
     println!("\nFound {} entries", lcounts - 2); // exclude header.
 
     filenames
@@ -34,7 +36,7 @@ pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
 
 fn split_csv_lines(lines: &str, lcounts: &u32) -> Vec<String> {
     let files: Vec<String> = lines.split(',')
-        .map(|recs| recs.trim().to_string())
+        .map(|e| e.trim().to_string())
         .collect();
 
     let cols = files.len();
