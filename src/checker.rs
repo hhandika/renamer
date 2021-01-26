@@ -26,7 +26,7 @@ pub fn display_errors(counts: &u32) {
     let stdout = io::stdout();
     let mut buff = BufWriter::new(stdout);
     writeln!(buff, "Errors found: {}", counts).unwrap();
-    writeln!(buff, "\nError Notes:").unwrap();
+    writeln!(buff, "\nError Kinds:").unwrap();
     writeln!(buff, "Error 1: The original file is not found").unwrap();
     writeln!(buff, "Error 2: The original file is not found, a file exists for the proposed name.").unwrap();
     writeln!(buff, "Error 3: The original file is found, a file exists for the proposed name.").unwrap();
