@@ -103,12 +103,21 @@ fn construct_path_new_names(
     let parent_path = old_names.parent().unwrap();
     let filenames = prop_names.file_name().unwrap();
     let mut new_names = parent_path.join(filenames);
+    
+    match_extension(old_names, &mut new_names);
 
     if new_names.is_file() {
         new_names = create_duplicate_names(&new_names);
     }
 
     new_names
+}
+
+fn match_extension(old_name: &PathBuf, new_names: &mut PathBuf) {
+    let ext = old_name.extension();
+    if ext != new_names.extension() {
+        new_names.set_extension(ext.unwrap());
+    }
 }
 
 fn create_duplicate_names(fpath: &PathBuf) -> PathBuf {
@@ -169,6 +178,7 @@ mod test {
         let input = "test_files/invalid_input.csv";
         rename_files(&input).unwrap();
     }
+
     #[test]
     fn construct_path_test() {
         let old_name = PathBuf::from("data/old.fq.gz");
@@ -179,6 +189,27 @@ mod test {
 
         assert_eq!(new_names, construct_path_new_names(&old_name, &prop_name));
         assert_eq!(new_names, construct_path_new_names(&old_name, &prop_path));
+    }
+
+    #[test]
+    fn construct_path_extmatch_test() {
+        let old_name = PathBuf::from("data/old.fq.gzip");
+        let prop_name = PathBuf::from("new.fq.gz");
+
+        let new_names = PathBuf::from("data/new.fq.gzip");
+
+        assert_eq!(new_names, construct_path_new_names(&old_name, &prop_name));
+    }
+
+    #[test]
+    fn match_extension_test() {
+        let old_name = PathBuf::from("data/old.fq.gzip");
+        let mut new_names = PathBuf::from("data/new.fq.gz");
+
+        let res = PathBuf::from("data/new.fq.gzip");
+        match_extension(&old_name, &mut new_names);
+        
+        assert_eq!(res,new_names);
     }
 
     #[test]
