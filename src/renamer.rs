@@ -8,7 +8,8 @@ use std::process;
 use crate::parser;
 
 pub fn rename_files(path: &str) -> Result<(), Error> {
-    let filenames = parser::parse_csv(path);
+    let dryrun = false;
+    let filenames = parser::parse_csv(path, dryrun);
 
     // Keep track file renaming.
     // Opposite insertion. The new_names is the key.

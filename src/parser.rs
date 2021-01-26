@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{self, BufReader};
+use std::io::{self, BufReader, Error};
 use std::io::prelude::*;
 use std::path::PathBuf;
 
 use crate::checker;
 use std::process;
 
-pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
+pub fn parse_csv(path: &str, dryrun: bool) -> HashMap<PathBuf, PathBuf> {
     let file = File::open(path).unwrap();
     let buff = BufReader::new(&file);
 
@@ -33,9 +33,8 @@ pub fn parse_csv(path: &str) -> HashMap<PathBuf, PathBuf> {
             
         });
 
-    if errors > 0 {check_input(&errors);}
-
-    println!("\nFound {} entries", lcounts - 2); // exclude header.
+    println!("\nEntries found: {}", lcounts - 2); // exclude header.
+    check_input(&errors, dryrun);
 
     filenames
 }
@@ -59,15 +58,17 @@ fn split_csv_lines(lines: &str, lcounts: &u32) -> Vec<String> {
     files   
 }
 
-fn check_input(errors: &u32) {
-    checker::display_errors(errors);
-    if !get_user_input_err() {
-        process::abort();
+fn check_input(errors: &u32, dryrun: bool) {
+    if *errors > 0 {
+        checker::display_errors(errors);
+        if !dryrun {
+            get_user_input_err().unwrap();
+        }
     }
 }
 
-fn get_user_input_err() -> bool {
-    println!("Would you like to continue: [y]es/[n]o? ");
+fn get_user_input_err() -> Result<(), Error> {
+    println!("\nWould you like to continue: [y]es/[n]o? ");
 
     let mut input = false;
     loop {
@@ -90,7 +91,11 @@ fn get_user_input_err() -> bool {
         };
     }
 
-    input
+    if !input {
+        process::exit(1);
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -139,7 +144,7 @@ mod test {
         let old = PathBuf::from("test_files/valid.fastq.gz");
         let new = PathBuf::from("test_files/valid_new.fastq.gz");
 
-        let filenames = parse_csv(&input);
+        let filenames = parse_csv(&input, true);
 
         for (old_names, new_names) in filenames {
             assert_eq!(old, old_names);
@@ -153,7 +158,7 @@ mod test {
         let old = PathBuf::from("test_files/valid2.fastq.gzip");
         let new = PathBuf::from("valid_new2.fastq.gz");
 
-        let filenames = parse_csv(&input);
+        let filenames = parse_csv(&input, true);
 
         for (old_names, new_names) in filenames {
             assert_eq!(old, old_names);
@@ -165,14 +170,14 @@ mod test {
     #[should_panic]
     fn parse_csv_panic_test() {
         let input = "test_files/invalid_input.csv";
-        parse_csv(&input);
+        parse_csv(&input, true);
     }
 
     #[test]
     #[should_panic(expected="INVALID CSV INPUT! ONLY ONE COLUMN FOUND IN LINE 3.")]
     fn parse_csv_panic_message_test() {
         let input = "test_files/invalid_input.csv";
-        parse_csv(&input);
+        parse_csv(&input, true);
     }
 
 
