@@ -22,7 +22,9 @@ pub fn write_to_csv(recs: &mut [PathBuf], bpa: bool) -> Result<()> {
 struct Id {
     full_path: String,
     new_names: String,
+    parent_path: String,
     fname: String,
+    fstem: String,
     file_id: String,
     read_id: String,
 }
@@ -32,7 +34,9 @@ impl Id {
         Self {
             full_path: lines.to_string_lossy().into_owned(),
             new_names: String::from("FILL HERE!"),
+            parent_path: lines.parent().unwrap().to_string_lossy().into_owned(),
             fname: lines.file_name().unwrap().to_string_lossy().into_owned(),
+            fstem: lines.file_stem().unwrap().to_string_lossy().into_owned(),
             file_id: String::from("N/A"), 
             read_id: String::from("N/A")
         }
@@ -49,7 +53,7 @@ impl Id {
 }
 
 fn write_header<W: Write>(line:&mut W, bpa: bool) {
-    write!(line, "full_path,new_names,filenames").unwrap();
+    write!(line, "full_path,new_names,parent_path,filenames,file_stem").unwrap();
 
     if bpa {
         write!(line, ",id,read_id").unwrap();
@@ -59,11 +63,13 @@ fn write_header<W: Write>(line:&mut W, bpa: bool) {
 }
 
 fn write_content<W: Write>(id: &mut Id, line:&mut W, bpa: bool) {
-    write!(line, "{},{},{}", 
+    write!(line, "{},{},{},{},{}", 
         id.full_path, 
-        id.new_names, 
-        id.fname)
-        .unwrap();
+        id.new_names,
+        id.parent_path, 
+        id.fname,
+        id.fstem
+    ).unwrap();
 
     if bpa {
         id.split_file_names();
