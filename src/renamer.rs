@@ -16,38 +16,38 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
     let mut temp: HashMap<PathBuf, PathBuf> = HashMap::new();
 
     println!("Renaming files...");
-    for (old_names, prop_names) in filenames.iter() {
-        let new_names = check_new_names(&prop_names);
+    for (origin, destination) in filenames.iter() {
+        let new_names = check_new_names(&destination);
         
-        match fs::rename(old_names, &new_names) {
+        match fs::rename(origin, &new_names) {
             Ok(()) => {
-                temp.insert(new_names.to_path_buf(), old_names.to_path_buf());
-                display_result(old_names, &new_names);
+                temp.insert(new_names.to_path_buf(), origin.to_path_buf());
+                display_result(origin, &new_names);
             },
 
             Err(error) => match error.kind() {
 
                 ErrorKind::PermissionDenied => { 
-                    println!("Can't rename {:?}. It may be used by another program.", old_names);
+                    println!("Can't rename {:?}. It may be used by another program.", origin);
                     
                     let input =  get_user_input();
                     match input {
 
                         b'r' => { 
-                            match fs::rename(old_names, &new_names) {
+                            match fs::rename(origin, &new_names) {
                                 Ok(()) => {
-                                    temp.insert(new_names.to_path_buf(), old_names.to_path_buf());
-                                    display_result(old_names, &new_names);
+                                    temp.insert(new_names.to_path_buf(), origin.to_path_buf());
+                                    display_result(origin, &new_names);
                                 }
                                 Err(_) => {
-                                    println!("Still can't rename {:?}. Skipping it...", old_names);
+                                    println!("Still can't rename {:?}. Skipping it...", origin);
                                     continue;
                                 }
                             }
                         }
 
                         b'c' => {
-                            println!("Skipping {:?}", old_names);
+                            println!("Skipping {:?}", origin);
                             continue;
                         },
 
@@ -60,7 +60,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
                 }
 
                 ErrorKind::NotFound => {
-                    println!("{:?} \x1b[0;41mNOT FOUND!\x1b[0m", old_names);
+                    println!("{:?} \x1b[0;41mNOT FOUND!\x1b[0m", origin);
                     continue;
                 }
 
@@ -95,11 +95,11 @@ fn get_user_input() -> u8 {
     input
 }
 
-fn check_new_names(prop_names: &PathBuf) -> PathBuf {
-    if prop_names.is_file() {
-        create_duplicate_names(&prop_names)
+fn check_new_names(destination: &PathBuf) -> PathBuf {
+    if destination.is_file() {
+        create_duplicate_names(&destination)
     } else {
-        PathBuf::from(prop_names)
+        PathBuf::from(destination)
     }
 }
 
