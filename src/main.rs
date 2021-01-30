@@ -19,7 +19,7 @@ fn main() {
     let elapsed = tnow.elapsed(); 
     
     println!("\nExecution time: {:?}", elapsed);
-    println!("Thank you for using renamer v{} 🙏", &version);
+    println!("Thank you for using renamer v{}! 🙏", &version);
     
 }
 
