@@ -14,6 +14,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
     // Keep track file renaming.
     // Opposite insertion. The new_names is the key.
     let mut temp: HashMap<PathBuf, PathBuf> = HashMap::new();
+    let mut rename_count = 0;
 
     println!("Renaming files...");
     for (origin, destination) in filenames.iter() {
@@ -23,6 +24,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
             Ok(()) => {
                 temp.insert(new_names.to_path_buf(), origin.to_path_buf());
                 display_result(origin, &new_names);
+                rename_count += 1;
             },
 
             Err(error) => match error.kind() {
@@ -38,6 +40,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
                                 Ok(()) => {
                                     temp.insert(new_names.to_path_buf(), origin.to_path_buf());
                                     display_result(origin, &new_names);
+                                    rename_count += 1;
                                 }
                                 Err(_) => {
                                     println!("Still can't rename {:?}. Skipping it...", origin);
@@ -70,6 +73,7 @@ pub fn rename_files(path: &str) -> Result<(), Error> {
             }
         }
     }
+    println!("\nTotal files renamed: {}", rename_count);
 
     Ok(())
 }
