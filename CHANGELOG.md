@@ -1,6 +1,7 @@
 - v0.3.6
     - Improved error checking.
-    - Check input errors before renaming.
+        - Check input errors before renaming.
+        - Fix issues dry-run not recognizing new names conflict.
     
 - v0.3.5
     - Simplify finder output format.
