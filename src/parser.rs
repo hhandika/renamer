@@ -24,7 +24,8 @@ pub fn parse_csv(path: &str, dryrun: bool) -> HashMap<PathBuf, PathBuf> {
                 _ => { 
                     let files = split_csv_lines(&recs, &lcounts);
                     let old_names = PathBuf::from(&files[0]);
-                    let new_names = PathBuf::from(&files[1]);
+                    let mut new_names = PathBuf::from(&files[1]);
+                    new_names = construct_new_names(&old_names, &new_names);
                     checker::check_input_errors(&old_names, &new_names, &mut errors);
                     filenames.insert(old_names, new_names);
                     lcounts += 1;
@@ -56,6 +57,27 @@ fn split_csv_lines(lines: &str, lcounts: &u32) -> Vec<String> {
     }
     
     files   
+}
+
+fn construct_new_names(old_names: &PathBuf, prop_names: &PathBuf) -> PathBuf {
+
+    let parent_path = old_names.parent().unwrap();
+    let filenames = prop_names.file_name().unwrap();
+    let mut new_names = parent_path.join(filenames);
+
+    match_extension(old_names, &mut new_names)
+        .expect("Can't match file extension");
+
+    new_names
+}
+
+fn match_extension(old_name: &PathBuf, new_names: &mut PathBuf) -> Result<(), Error>{
+    let ext = old_name.extension().unwrap();
+    if ext != new_names.extension().unwrap() {
+        new_names.set_extension(ext);
+    }
+
+    Ok(())
 }
 
 fn check_input(errors: &u32, dryrun: bool) {
@@ -145,7 +167,7 @@ mod test {
     fn parse_multicols_csv_test() {
         let input = "test_files/multicols_input.csv";
         let old = PathBuf::from("test_files/valid2.fastq.gzip");
-        let new = PathBuf::from("valid_new2.fastq.gz");
+        let new = PathBuf::from("test_files/valid_new2.fastq.gzip");
 
         let filenames = parse_csv(&input, true);
 
@@ -169,5 +191,46 @@ mod test {
         parse_csv(&input, true);
     }
 
+    #[test]
+    fn construct_path_test() {
+        let old_name = PathBuf::from("data/old.fq.gz");
+        let prop_name = PathBuf::from("new.fq.gz");
+        let prop_path = PathBuf::from("data/new.fq.gz");
+
+        let new_names = PathBuf::from("data/new.fq.gz");
+
+        assert_eq!(new_names, construct_new_names(&old_name, &prop_name));
+        assert_eq!(new_names, construct_new_names(&old_name, &prop_path));
+    }
+
+    #[test]
+    fn construct_path_ext_match_test() {
+        let old_name = PathBuf::from("data/old.fq.gzip");
+        let prop_name = PathBuf::from("new.fq.gz");
+
+        let new_names = PathBuf::from("data/new.fq.gzip");
+
+        assert_eq!(new_names, construct_new_names(&old_name, &prop_name));
+    }
+
+    #[test]
+    fn match_extension_test() {
+        let old_name = PathBuf::from("data/old.fq.gzip");
+        let mut new_names = PathBuf::from("data/new.fq.gz");
+
+        let res = PathBuf::from("data/new.fq.gzip");
+        match_extension(&old_name, &mut new_names).unwrap();
+        
+        assert_eq!(res,new_names);
+    }
+
+    #[test]
+    fn match_extension_ok_test() {
+        let old_name = PathBuf::from("data/old.fq.gzip");
+        let mut new_names = PathBuf::from("data/new.fq.gzip");
+        let res = match_extension(&old_name, &mut new_names);
+        
+        assert!(res.is_ok());
+    }
 
 }
