@@ -8,11 +8,12 @@ mod parser;
 mod renamer;
 mod writer;
 
+use clap::crate_version;
 
 use std::time::Instant;
 
 fn main() {
-    let version = "0.3.6";
+    let version = crate_version!();
 
     let tnow = Instant::now();
     cli::get_cli(&version);
